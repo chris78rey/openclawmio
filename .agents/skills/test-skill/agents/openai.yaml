@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Skill"
+  short_description: "Skill de prueba para validar estructura y flujo"
+  default_prompt: "Usa este skill para pruebas basicas de estructura y ejecucion."
