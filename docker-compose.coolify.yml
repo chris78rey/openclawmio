@@ -10,8 +10,8 @@ services:
       - coolify
     environment:
       TZ: ${TZ:-America/Guayaquil}
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 5g
+    memswap_limit: 5g
     logging:
       driver: json-file
       options:
