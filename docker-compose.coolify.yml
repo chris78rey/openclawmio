@@ -11,7 +11,7 @@
       HOME: /home/node
       TERM: xterm-256color
       NODE_ENV: production
-      TZ: ${TZ:-America/Costa_Rica}
+      TZ: ${TZ:-America/Guayaquil}
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
       OPENCLAW_GATEWAY_BIND: lan
       OPENCLAW_GATEWAY_PORT: "18789"
