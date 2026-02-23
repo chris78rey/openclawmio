@@ -1,15 +1,45 @@
 services:
-  ubuntu-base:
-    image: ${UBUNTU_IMAGE:-ubuntu:24.04}
+  openclaw-gateway:
+    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:main}
     restart: unless-stopped
     init: true
     command:
-      - sleep
-      - infinity
+      - node
+      - dist/index.js
+      - gateway
+      - --allow-unconfigured
+      - --bind
+      - lan
+      - --port
+      - "18789"
     networks:
       - coolify
+    expose:
+      - "18789"
     environment:
+      HOME: /home/node
+      TERM: xterm-256color
       TZ: ${TZ:-America/Guayaquil}
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      OPENCLAW_GATEWAY_BIND: lan
+      OPENCLAW_GATEWAY_PORT: "18789"
+      OPENCLAW_GATEWAY_ALLOW_UNCONFIGURED: "true"
+      CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY:-}
+      CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY:-}
+      CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE:-}
+    volumes:
+      - openclaw_config:/home/node/.openclaw
+      - openclaw_workspace:/home/node/.openclaw/workspace
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1:18789/
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     mem_limit: 5g
     memswap_limit: 5g
     logging:
@@ -17,7 +47,24 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - traefik.http.routers.bot-openclaw.rule=Host(`${OPENCLAW_DOMAIN:-bot.da-tica.com}`)
+      - traefik.http.routers.bot-openclaw.entrypoints=https
+      - traefik.http.routers.bot-openclaw.tls=true
+      - traefik.http.routers.bot-openclaw.tls.certresolver=letsencrypt
+      - traefik.http.services.bot-openclaw.loadbalancer.server.port=18789
+      - traefik.http.routers.bot-openclaw-http.rule=Host(`${OPENCLAW_DOMAIN:-bot.da-tica.com}`)
+      - traefik.http.routers.bot-openclaw-http.entrypoints=http
+      - traefik.http.routers.bot-openclaw-http.middlewares=bot-openclaw-redirect
+      - traefik.http.middlewares.bot-openclaw-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.bot-openclaw-redirect.redirectscheme.permanent=true
 
 networks:
   coolify:
     external: true
+
+volumes:
+  openclaw_config:
+  openclaw_workspace:

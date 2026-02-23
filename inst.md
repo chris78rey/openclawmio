@@ -1,55 +1,46 @@
-# VPS Ubuntu 24 (base minima en Coolify)
+# OpenClaw en Coolify (automatico)
 
 Objetivo:
-- mantener el servidor solo con base Ubuntu 24
-- no desplegar OpenClaw ni servicios de aplicacion
-- usar maximo 5GB RAM y 50GB de disco en el VPS
+- desplegar OpenClaw en `bot.da-tica.com` con HTTPS
+- mantener maximo `5GB` RAM y politica de `50GB` disco del VPS
 
-Archivos usados:
+Archivos:
 - `docker-compose.coolify.yml`
 - `.env.example`
+- `scripts/bootstrap-openclaw-official.sh` (opcional, fuera de Coolify)
 
-## Uso en Coolify
+## Despliegue en Coolify
 
-1. Crea una app tipo Docker Compose.
-2. Usa `docker-compose.coolify.yml`.
-3. Carga variables desde `.env.example`.
-4. Despliega.
+1. App tipo Docker Compose.
+2. Repo: `chris78rey/openclawmio`.
+3. Branch: `solo-linux`.
+4. Compose file: `docker-compose.coolify.yml`.
+5. Cargar variables desde `.env.example`.
+6. En Secrets, reemplazar `OPENCLAW_GATEWAY_TOKEN` por valor real.
+7. Deploy / Redeploy.
 
-Resultado esperado:
-- contenedor base `ubuntu:24.04` en ejecucion
-- sin dominio, sin Traefik, sin puertos publicados
-- limite de memoria del contenedor en `5g`
+## Requisitos para que funcione el dominio
 
-## Limites de capacidad
+- DNS `A` de `bot.da-tica.com` al IP publico del VPS.
+- Traefik de Coolify activo.
+- Abrir puertos 80 y 443 en firewall.
+- Acceder por `https://bot.da-tica.com/` (sin puerto `:18789`).
 
-- RAM: definida en compose con `mem_limit: 5g` y `memswap_limit: 5g`.
-- Disco: el limite de `50GB` se define en el volumen/disco del VPS (Coolify/Proveedor), no en este compose base.
+## Capacidad
 
-Comandos de verificacion sugeridos en el VPS:
+- RAM contenedor: `mem_limit: 5g` y `memswap_limit: 5g`.
+- Disco 50GB: se controla en el disco/volumen del VPS, no en compose.
+
+## Validacion local de compose
 
 ```bash
-docker stats --no-stream
-df -h
-docker system df
+docker compose -f docker-compose.coolify.yml --env-file .env.example config
 ```
 
-## Nota operativa
+## Opcion alternativa (host, fuera de Coolify)
 
-Esta base sirve para validar servidor, red y runtime Docker.
-Cuando quieras desplegar el bot, se reemplaza este compose por uno de aplicacion.
-
-## Automatizacion OpenClaw Oficial (1 comando)
-
-Si quieres que el VPS haga todo automaticamente (Docker + repo oficial + permisos + arranque):
+Instalacion oficial OpenClaw en 1 comando:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/chris78rey/openclawmio/solo-linux/scripts/bootstrap-openclaw-official.sh | sudo bash
 ```
-
-Que hace este script:
-- instala Docker si no existe,
-- clona/actualiza `https://github.com/openclaw/openclaw`,
-- prepara volumenes con permisos `uid:gid 1000:1000`,
-- genera/reutiliza `OPENCLAW_GATEWAY_TOKEN`,
-- arranca `openclaw-gateway` con `--allow-unconfigured`.
