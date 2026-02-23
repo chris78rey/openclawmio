@@ -47,19 +47,6 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=coolify
-      - traefik.http.routers.bot-openclaw.rule=Host(`${OPENCLAW_DOMAIN:-bot.da-tica.com}`)
-      - traefik.http.routers.bot-openclaw.entrypoints=https
-      - traefik.http.routers.bot-openclaw.tls=true
-      - traefik.http.routers.bot-openclaw.tls.certresolver=letsencrypt
-      - traefik.http.services.bot-openclaw.loadbalancer.server.port=18789
-      - traefik.http.routers.bot-openclaw-http.rule=Host(`${OPENCLAW_DOMAIN:-bot.da-tica.com}`)
-      - traefik.http.routers.bot-openclaw-http.entrypoints=http
-      - traefik.http.routers.bot-openclaw-http.middlewares=bot-openclaw-redirect
-      - traefik.http.middlewares.bot-openclaw-redirect.redirectscheme.scheme=https
-      - traefik.http.middlewares.bot-openclaw-redirect.redirectscheme.permanent=true
 
 networks:
   coolify:
