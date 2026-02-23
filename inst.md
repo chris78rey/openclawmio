@@ -38,3 +38,18 @@ docker system df
 
 Esta base sirve para validar servidor, red y runtime Docker.
 Cuando quieras desplegar el bot, se reemplaza este compose por uno de aplicacion.
+
+## Automatizacion OpenClaw Oficial (1 comando)
+
+Si quieres que el VPS haga todo automaticamente (Docker + repo oficial + permisos + arranque):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chris78rey/openclawmio/solo-linux/scripts/bootstrap-openclaw-official.sh | sudo bash
+```
+
+Que hace este script:
+- instala Docker si no existe,
+- clona/actualiza `https://github.com/openclaw/openclaw`,
+- prepara volumenes con permisos `uid:gid 1000:1000`,
+- genera/reutiliza `OPENCLAW_GATEWAY_TOKEN`,
+- arranca `openclaw-gateway` con `--allow-unconfigured`.
