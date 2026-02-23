@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ejecuta MD Log"
+  short_description: "Anexa comandos en ejecuta.md con explicacion y bloque bash"
+  default_prompt: "Usa este skill para registrar y separar comandos en ejecuta.md antes o durante la ejecucion."
